@@ -39,6 +39,11 @@ func GetVideo() (string, error) {
 		// use dataId to get episodes and streams
 		// https://9anime.to/ajax/film/servers?id={title_id}
 
+		// after getting all the episodes search for the once on streamtape
+		// use the episode id to get the url of the iframe
+		// https://9anime.to/ajax/episode/info?id={self.url}&server=40
+
+		// request the iframe and download the video
 		out = fmt.Sprintf("player with id: %d has content %s\n", i, dataId)
 	})
 
