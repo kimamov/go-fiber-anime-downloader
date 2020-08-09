@@ -19,7 +19,7 @@ func SortString(s string) string {
 func GetVideo() (string, error) {
 
 	// Get the HMTML
-	resp, err := http.Get("https://9anime.to/watch/tower-of-god-dub.kvjr/ll3pknq")
+	resp, err := http.Get("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
 	if err != nil {
 		return "", err
 	}
@@ -31,12 +31,24 @@ func GetVideo() (string, error) {
 	}
 
 	// Find something
-	out := ""
-	doc.Find("#controls").Each(func(i int, s *goquery.Selection) {
-		playerIframe := s.Find(".autoplay").Text()
+	out := "nothing found"
+	doc.Find("#player").Each(func(i int, s *goquery.Selection) {
+		fmt.Println(goquery.OuterHtml(s))
 
-		out = fmt.Sprintf("player with id: %d has content %s\n", i, playerIframe)
+		dataId, _ := s.Attr("data-id")
+		// use dataId to get episodes and streams
+		// https://9anime.to/ajax/film/servers?id={title_id}
+
+		out = fmt.Sprintf("player with id: %d has content %s\n", i, dataId)
 	})
+
+	/* iframeContainer := doc.Find("#player")
+
+	iframeSrc, ok := iframeContainer.Find("iframe").Attr("src")
+
+	if ok != true {
+		return "", nil
+	} */
 
 	return out, nil
 }
@@ -56,6 +68,7 @@ func main() {
 	})
 
 	app.Get("/video", func(c *fiber.Ctx) {
+		c.Send("succes")
 		data, err := GetVideo()
 		if err != nil {
 			c.Send("failed to get video")
