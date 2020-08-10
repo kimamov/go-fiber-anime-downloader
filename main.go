@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -59,52 +58,61 @@ func GetVideo() (string, error) {
 	return out, nil
 }
 
-func GetData() (string, error) {
-
-	// Get the HMTML
-	resp, err := http.Get("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
+func GetDocument(url string) (*goquery.Document, error) {
+	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Convert HTML into goquery document
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
+func GetData() (string, error) {
+
+	// Get the HMTML
+	animeDocument, err := GetDocument("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
+	if err != nil {
 		return "", err
 	}
-
 	out := "nothing found"
 	// get the data-id from the player div
-	dataId, ok := doc.Find("div#player").Attr("data-id")
-
+	dataId, ok := animeDocument.Find("div#player").Attr("data-id")
 	if !ok {
 		return out, nil
 	}
 	// use data-id to a list of episodes
-	resp, err = http.Get(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataId))
+	animeStreamsDocument, err := GetDocument(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataId))
 	if err != nil {
 		return "", err
 	}
-	doc, err = goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
+	return fmt.Sprintln(goquery.OuterHtml(animeStreamsDocument.Contents())), nil
+	//return fmt.Sprintln(goquery.OuterHtml(animeStreamsDocument.Contents())), nil
 	// try to get the div containing the episodes hosted on streamtape
-	doc.Find("div").Each(func(i int, s *goquery.Selection) {
+	//var episodesMap map[int]string
+	episodesMap := make(map[int]string)
+	animeStreamsDocument.Find("div").Each(func(i int, s *goquery.Selection) {
 		dataName, _ := s.Attr("data-name")
-
-		matched, _ := regexp.MatchString(`40`, dataName)
-		if matched {
+		//fmt.Println(goquery.OuterHtml(s))
+		//matched, _ := regexp.MatchString(`40`, dataName)
+		if strings.Contains(dataName, "40") {
 			fmt.Println("data-name=", dataName)
-			//fmt.Println(goquery.OuterHtml(s))
-
-			fmt.Println(s.Find("a").Contents().Text())
+			fmt.Println("data-name=", i)
+			streamLinks := s.Children()
+			out = fmt.Sprintln(goquery.OuterHtml(streamLinks))
+			streamLinks.Find("a").Each(func(i int, s *goquery.Selection) {
+				episodesMap[i] = fmt.Sprintln( /* goquery.OuterHtml(s) */ i)
+			})
+			//fmt.Println(episodesMap)
 		}
 
 	})
 	//fmt.Println(goquery.OuterHtml(episodesContainer))
-	out = fmt.Sprintf("player with id: 1 has content %s\n", dataId)
+	//out = fmt.Sprintf("player with id: 1 has content %s\n", dataId)
 
 	return out, nil
 }
@@ -131,6 +139,14 @@ func main() {
 		} else {
 			c.Send(data)
 		}
+	})
+
+	app.Get("/proxyanime", func(c *fiber.Ctx) {
+		resp, err := http.Get("https://9anime.to/watch/terror-in-resonance-dub.818n/800n1v3")
+		if err != nil {
+			c.Send("failed to get")
+		}
+		c.Send(resp.Body)
 	})
 
 	app.Listen(3000)
