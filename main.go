@@ -10,6 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/djimenez/iconv-go"
 	"github.com/gofiber/fiber"
+	"github.com/gofiber/template/html"
 )
 
 func GetJsonDocument(url string) (*goquery.Document, error) {
@@ -94,9 +95,12 @@ func GetData() (map[int]string, error) {
 }
 
 func main() {
-	app := fiber.New()
+	engine := html.New("./views", ".html")
+	app := fiber.New(&fiber.Settings{
+		Views: engine,
+	})
 
-	app.Get("/video", func(c *fiber.Ctx) {
+	app.Get("/api/video", func(c *fiber.Ctx) {
 		c.Send("succes")
 		data, err := GetData()
 		if err != nil {
@@ -104,6 +108,13 @@ func main() {
 		} else {
 			c.Send(data)
 		}
+	})
+
+	//app.Static("/", "./public")
+	app.Get("/*", func(c *fiber.Ctx) {
+		_ = c.Render("index", fiber.Map{
+			"Title": "hey there! ;)",
+		})
 	})
 
 	app.Listen(3000)
