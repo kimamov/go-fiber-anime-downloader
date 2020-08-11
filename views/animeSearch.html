@@ -1,0 +1,36 @@
+
+<div class="card p-2">
+  <style>
+    .film-list{
+        display: grid;
+        grid-template-columns: repeat( auto-fit, minmax(16rem, 1fr) );
+    }
+    .item .poster {
+        display: block;
+        height: 100%;
+        width: 100%;
+    }
+    .item .poster img{
+        width: 100%;
+        height: auto;
+    }
+    .item .inner {
+        padding: 0.2rem 0.1rem;
+    }
+  </style>
+  <h1>anime test</h1>
+  <div id="animeSearchContainer">
+    
+  </div>
+  <script>
+    window.onload=function(){
+        const container=document.querySelector("#animeSearchContainer");
+        const data="{{.AnimeListHTML}}"
+        if(data){
+            const fixedData=data.replace(/data-src=/g, "src=");
+            container.innerHTML=fixedData;
+        }
+        
+    }
+  </script>
+</div>

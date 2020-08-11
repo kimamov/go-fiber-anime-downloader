@@ -11,7 +11,7 @@ import (
 	"github.com/djimenez/iconv-go"
 )
 
-func GetJsonDocument(url string) (*goquery.Document, error) {
+func getJSONDocument(url string) (*goquery.Document, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func GetJsonDocument(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
-func GetDocument(url string) (*goquery.Document, error) {
+func getDocument(url string) (*goquery.Document, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -65,10 +65,11 @@ type AnimeEpisodeLink struct {
 	LinkID    string
 }
 
+// GetData tries to return a list of anime episodes from an url
 func GetData() ([]AnimeEpisodeLink, error) {
 
 	// Get the HMTML
-	animeDocument, err := GetDocument("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
+	animeDocument, err := getDocument("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func GetData() ([]AnimeEpisodeLink, error) {
 		return nil, nil
 	}
 	// use data-id to a list of episodes
-	animeStreamsDocument, err := GetJsonDocument(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataID))
+	animeStreamsDocument, err := getJSONDocument(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataID))
 	if err != nil {
 		return nil, err
 	}
@@ -99,4 +100,28 @@ func GetData() ([]AnimeEpisodeLink, error) {
 	})
 
 	return episodesList, nil
+}
+
+// Anime is an anime we craped from 9anime search
+type Anime struct {
+	Title         string
+	ThumbnailPath string
+	URL           string
+}
+
+// FindAnime tries to return an array of animes for a certain title string
+func FindAnime(title string) (string, error) {
+	document, err := getDocument(fmt.Sprintf("https://9anime.to/search?keyword=%s", title))
+	if err != nil {
+		return "", err
+	}
+	animeContainer := document.Find(`div.film-list`).First()
+	if animeContainer != nil {
+		html, err := goquery.OuterHtml(animeContainer)
+		if err != nil {
+			return "", nil
+		}
+		return html, nil
+	}
+	return "<h1>nothing found :(</h1>", nil
 }

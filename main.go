@@ -44,6 +44,27 @@ func main() {
 		}
 	})
 
+	app.Get("/search", func(c *fiber.Ctx) {
+		key := c.Query("key")
+		c.Set("Content-Type", "text/html")
+
+		if key == "" {
+			c.Send(`<h1>please provide a valid search key</h1>`)
+		} else {
+			animeList, err := api.FindAnime(key)
+			if err != nil {
+				c.Send("<h1>failed to find anything</h1>")
+			} else {
+				//fmt.Println(animeList)
+				//c.Send(animeList)
+				_ = c.Render("animeSearch", fiber.Map{
+					"Title":         "hey there! ;)",
+					"AnimeListHTML": animeList,
+				}, "layouts/main")
+			}
+		}
+	})
+
 	//app.Static("/", "./public")
 	app.Get("/*", func(c *fiber.Ctx) {
 		_ = c.Render("index", fiber.Map{
