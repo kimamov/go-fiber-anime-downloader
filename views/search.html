@@ -3,8 +3,8 @@
   <h1>anime test</h1>
   <div>
     {{range $index, $element := .AnimeEpisodes}}
-      <a href="/episode/{{$element}}">
-        {{$index}}
+      <a href="https://9anime.to/ajax/episode/info?id={{$element.LinkID}}&server=40">
+        {{$element.EpisodeID}}
       </a>
     {{end}}
   </div>
