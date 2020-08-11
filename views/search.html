@@ -1,0 +1,11 @@
+
+<div class="card p-2">
+  <h1>anime test</h1>
+  <div>
+    {{range $index, $element := .AnimeEpisodes}}
+      <a href="/episode/{{$element}}">
+        {{$index}}
+      </a>
+    {{end}}
+  </div>
+</div>

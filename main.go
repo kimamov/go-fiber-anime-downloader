@@ -61,7 +61,13 @@ func GetDocument(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
-func GetData() (map[int]string, error) {
+// AnimeEpisodeLink is there to display links to episodes
+type AnimeEpisodeLink struct {
+	EpisodeID int
+	LinkID    string
+}
+
+func GetData() ([]AnimeEpisodeLink, error) {
 
 	// Get the HMTML
 	animeDocument, err := GetDocument("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
@@ -80,18 +86,22 @@ func GetData() (map[int]string, error) {
 	}
 
 	// try to get the div containing the episodes hosted on streamtape
-	var episodesMap map[int]string
-	episodesMap = make(map[int]string)
+	//var episodesMap map[int]string
+	//episodesMap = make(map[int]string)
+	var episodesList []AnimeEpisodeLink
 	container := animeStreamsDocument.Find(`div[data-id="40"]`)
 	container.Find("a").Each(func(i int, s *goquery.Selection) {
-		episodeId, ok := s.Attr("data-id")
+		LinkID, ok := s.Attr("data-id")
 		if ok {
-			episodesMap[i] = episodeId
+			episodesList = append(episodesList, AnimeEpisodeLink{
+				EpisodeID: i,
+				LinkID:    LinkID,
+			})
 		}
 	})
 	//fmt.Println(episodesMap)
 
-	return episodesMap, nil
+	return episodesList, nil
 }
 
 func main() {
@@ -110,11 +120,24 @@ func main() {
 		}
 	})
 
+	app.Get("/test", func(c *fiber.Ctx) {
+		c.Send("succes")
+		data, err := GetData()
+		if err != nil {
+			c.Send("failed to get video")
+		} else {
+			_ = c.Render("search", fiber.Map{
+				"Title":         "hey there! ;)",
+				"AnimeEpisodes": data,
+			}, "layouts/main")
+		}
+	})
+
 	//app.Static("/", "./public")
 	app.Get("/*", func(c *fiber.Ctx) {
 		_ = c.Render("index", fiber.Map{
 			"Title": "hey there! ;)",
-		})
+		}, "layouts/main")
 	})
 
 	app.Listen(3000)
