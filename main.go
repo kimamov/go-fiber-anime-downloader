@@ -87,7 +87,10 @@ func main() {
 			c.Send("could not find video src")
 			return
 		}
-		c.Send(stream)
+		c.Render("stream", fiber.Map{
+			"Title":     "stream or download your anime",
+			"StreamSrc": stream,
+		}, "layouts/main")
 	})
 
 	//app.Static("/", "./public")
