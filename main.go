@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/callicoder/packer/api"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/template/html"
@@ -20,9 +18,13 @@ func main() {
 		Views: engine,
 	})
 
-	app.Get("/api/video", func(c *fiber.Ctx) {
-		c.Send("succes")
-		data, err := api.GetData()
+	app.Get("/api/getepisodes", func(c *fiber.Ctx) {
+		url := c.Query("url")
+		if url == "" {
+			c.Send("please provide a valid 9anime url")
+			return
+		}
+		data, err := api.GetData(url)
 		if err != nil {
 			c.Send("failed to get video")
 		} else {
@@ -30,13 +32,17 @@ func main() {
 		}
 	})
 
-	app.Get("/test", func(c *fiber.Ctx) {
-		c.Send("succes")
-		data, err := api.GetData()
+	app.Get("/getepisodes", func(c *fiber.Ctx) {
+		url := c.Query("url")
+		if url == "" {
+			c.Send("please provide a valid 9anime url")
+			return
+		}
+		data, err := api.GetData(url)
 		if err != nil {
 			c.Send("failed to get video")
 		} else {
-			fmt.Println(data)
+			//fmt.Println(data)
 			_ = c.Render("search", fiber.Map{
 				"Title":         "hey there! ;)",
 				"AnimeEpisodes": data,
@@ -63,6 +69,25 @@ func main() {
 				}, "layouts/main")
 			}
 		}
+	})
+
+	app.Get("/getstream", func(c *fiber.Ctx) {
+		videoID := c.Query("id")
+
+		if videoID == "" {
+			c.Send(`please provide a valid id`)
+			return
+		}
+		stream, err := api.GetStream(videoID)
+		if err != nil {
+			c.Send(err)
+			return
+		}
+		if stream == "" {
+			c.Send("could not find video src")
+			return
+		}
+		c.Send(stream)
 	})
 
 	//app.Static("/", "./public")

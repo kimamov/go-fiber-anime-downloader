@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 	"github.com/djimenez/iconv-go"
 )
 
-func getJSONDocument(url string) (*goquery.Document, error) {
+func getJSONResponse(url string) (map[string]string, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -27,6 +28,17 @@ func getJSONDocument(url string) (*goquery.Document, error) {
 	// parse json from res.body
 	var result map[string]string
 	json.Unmarshal(body, &result)
+	if result != nil {
+		return result, nil
+	}
+	return nil, errors.New("failed to parse JSON")
+}
+
+func getJSONDocument(url string) (*goquery.Document, error) {
+	result, err := getJSONResponse(url)
+	if err != nil {
+		return nil, err
+	}
 	// use utfBody using goquery
 	//fmt.Println(result["html"])
 	resultReader := strings.NewReader(result["html"])
@@ -66,10 +78,10 @@ type AnimeEpisodeLink struct {
 }
 
 // GetData tries to return a list of anime episodes from an url
-func GetData() ([]AnimeEpisodeLink, error) {
+func GetData(animeURL string) ([]AnimeEpisodeLink, error) {
 
 	// Get the HMTML
-	animeDocument, err := getDocument("https://9anime.to/watch/tower-of-god-dub.kvjr/ojo9nqz")
+	animeDocument, err := getDocument(animeURL)
 	if err != nil {
 		return nil, err
 	}
@@ -124,4 +136,55 @@ func FindAnime(title string) (string, error) {
 		return html, nil
 	}
 	return "<h1>nothing found :(</h1>", nil
+}
+
+func GetStream(videoID string) (string, error) {
+	// https://9anime.to/ajax/episode/info?id=550fd1cbd47a12d12729279913a9eb7040ea828c6a169fec38e2169641146d70&server=40
+	//fmt.Println("was called")
+	streamTapeLink, err := getJSONResponse(fmt.Sprintf("https://9anime.to/ajax/episode/info?id=%s&server=40", videoID))
+	if err != nil {
+		return "", err
+	}
+	val, ok := streamTapeLink["target"]
+	if !ok || val == "" {
+		return "", errors.New("could not find a valid link")
+	}
+	// val will be the url of the streamTape iframe content
+	// lets get that contet
+	/* res, err := http.Get(val)
+	if err != nil {
+		log.Panic(err)
+	}
+	if res.Body != nil {
+		defer res.Body.Close()
+		str, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Panic(err)
+		}
+		fmt.Printf(string(str))
+	} */
+	playerDocument, err := getDocument(val)
+	//fmt.Println(playerDocument.Text())
+	//fmt.Println(val)
+	if err != nil {
+		return "", err
+	}
+	videoSrc := ""
+	playerDocument.Find("div").Each(func(index int, node *goquery.Selection) {
+		node.RemoveAttr("hidden")
+		node.RemoveAttr("style")
+		//fmt.Printf(goquery.OuterHtml(node))
+		videoLinkContainerID, ok := node.Attr("id")
+		if ok && videoLinkContainerID == "videolink" {
+			//fmt.Println(videoLinkContainerID)
+			videoLink := node.Text()
+			if videoLink != "" {
+				videoSrc = fmt.Sprintf("https:%s", videoLink)
+			}
+		}
+	})
+	if videoSrc != "" {
+		return videoSrc, nil
+	}
+	return "", errors.New("could not find video src")
 }
