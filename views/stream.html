@@ -1,9 +1,14 @@
 <style>
-    .streamLink{
-        margin: 0.4rem 2rem;
-        padding: 0.4rem;
-    }
+    
 </style>
-<div class="container d-flex">
-    <a class="streamLink" href="{{.StreamSrc}}" target="_blank">stream episode</a>
+
+<div class="pt-2 pb-5">
+    <a href="{{.StreamSrc}}" target="_blank">
+        <button class="btn btn-primary">
+            open original stream
+        </button>
+    </a>
+    <video class="mt-4" style="width: 100%" src="{{.StreamSrc}}" controls>
+
+    </video>
 </div>

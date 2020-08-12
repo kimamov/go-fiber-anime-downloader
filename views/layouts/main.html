@@ -12,23 +12,27 @@
   </head>
   <body>
     <main class="container-lg">
-        <h1>{{.Title}}</h1>
-        <form class="mx-auto py-4" action="">
-            <label for="animeSearchInput" class="form-label">
-                <b>search for 9anime url</b>
-            </label>
-            <input 
-                id="animeSearchInput" 
-                type="url" 
-                placeholder="search 9anime url" 
-                aria-label="search nineanime url" 
-                class="form-control" 
-                name="animeurl" 
-            >
-            <button type="submit" class="btn btn-primary my-2">
-                GET EPISODES
-            </button>
+        <form class="mx-auto py-4" action="/search" method="GET">
+              <label for="animeSearchInput" class="form-label">
+                <b>search for anime</b>
+              </label>
+              <div class="d-flex align-items-center">
+                <input 
+                    id="animeSearchInput" 
+                    type="text" 
+                    placeholder="enter anime title" 
+                    aria-label="enter anime title" 
+                    class="form-control flex-fill" 
+                    name="key" 
+                >
+                <button type="submit" class="btn btn-primary my-2 flex-shrink-0">
+                  GET EPISODES
+                </button>
+              </div>
+            
         </form>
+        <h1>{{.Title}}</h1>
+        
         {{embed}}
     </main>
 
