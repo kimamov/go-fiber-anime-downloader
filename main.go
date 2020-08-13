@@ -103,9 +103,9 @@ func main() {
 		}, "layouts/main")
 	})
 
-	port := os.Getenv("SERVER_PORT")
+	port := os.Getenv("ANIME_SERVER_PORT")
 	if port == "" {
-		port = "5000"
+		port = "5600"
 	}
 	log.Println(app.Listen(port))
 }
