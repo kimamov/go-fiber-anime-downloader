@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/callicoder/packer/api"
+	"goserver/api"
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/template/html"
 )
@@ -100,5 +103,9 @@ func main() {
 		}, "layouts/main")
 	})
 
-	app.Listen(80)
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "5000"
+	}
+	log.Println(app.Listen(port))
 }
