@@ -87,13 +87,10 @@ func main() {
 			c.Send(err)
 			return
 		}
-		if stream == "" {
-			c.Send("could not find video src")
-			return
-		}
 		c.Render("stream", fiber.Map{
 			"Title":     "stream or download your anime",
-			"StreamSrc": stream,
+			"Episode":   stream.Episode,
+			"StreamSrc": stream.Link,
 		}, "layouts/main")
 	})
 

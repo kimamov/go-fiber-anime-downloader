@@ -151,16 +151,25 @@ func FindAnime(title string) (string, error) {
 	return "<h1>nothing found :(</h1>", nil
 }
 
-func GetStream(videoID string) (string, error) {
+type AnimeStream struct {
+	Link    string
+	Episode string
+}
+
+func GetStream(videoID string) (AnimeStream, error) {
 	// https://9anime.to/ajax/episode/info?id=550fd1cbd47a12d12729279913a9eb7040ea828c6a169fec38e2169641146d70&server=40
-	//fmt.Println("was called")
+	stream := AnimeStream{}
 	streamTapeLink, err := getJSONResponse(fmt.Sprintf("https://9anime.to/ajax/episode/info?id=%s&server=40", videoID))
 	if err != nil {
-		return "", err
+		return stream, err
 	}
 	val, ok := streamTapeLink["target"]
 	if !ok || val == "" {
-		return "", errors.New("could not find a valid link")
+		return stream, errors.New("could not find a valid link")
+	}
+	episode, ok := streamTapeLink["name"]
+	if !ok || val == "" {
+		return stream, errors.New("could not find valid episode")
 	}
 	// val will be the url of the streamTape iframe content
 	// lets get that contet
@@ -180,7 +189,7 @@ func GetStream(videoID string) (string, error) {
 	//fmt.Println(playerDocument.Text())
 	//fmt.Println(val)
 	if err != nil {
-		return "", err
+		return stream, err
 	}
 	videoSrc := ""
 	playerDocument.Find("div").Each(func(index int, node *goquery.Selection) {
@@ -197,7 +206,9 @@ func GetStream(videoID string) (string, error) {
 		}
 	})
 	if videoSrc != "" {
-		return videoSrc, nil
+		stream.Link = videoSrc
+		stream.Episode = episode
+		return stream, nil
 	}
-	return "", errors.New("could not find video src")
+	return stream, errors.New("could not find video src")
 }

@@ -8,7 +8,12 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <title>anime downloader</title>
+    <style>
+      form.searchForm{
+        margin-top: 10vh;
+      }
+    </style>
   </head>
   <body>
     <header class="navbar fixed-top navbar-light bg-light">
@@ -17,7 +22,7 @@
       </nav>
     </header>
     <main class="container-lg pt-5">
-        <form class="mx-auto py-4" action="/search" method="GET">
+        <form class="mx-auto py-4 searchForm" action="/search" method="GET">
               <label for="animeSearchInput" class="form-label">
                 <b>search for anime</b>
               </label>
