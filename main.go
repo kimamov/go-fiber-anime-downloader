@@ -47,8 +47,9 @@ func main() {
 		} else {
 			//fmt.Println(data)
 			_ = c.Render("search", fiber.Map{
-				"Title":         "hey there! ;)",
-				"AnimeEpisodes": data,
+				"Title":         "",
+				"AnimeTitle":    data.Title,
+				"AnimeEpisodes": data.Episodes,
 			}, "layouts/main")
 		}
 	})

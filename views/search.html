@@ -1,9 +1,22 @@
 
+<style>
+  .roundedLink{
+    display: inline-flex;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    height: 2.4rem;
+    width: 2.4rem;
+    border-radius: 2rem;
+    box-sizing: border-box;
+    font-weight: bold;
+  }
+</style>
 <div class="card p-2">
-  <h1>anime test</h1>
-  <div>
+  <h1>{{.AnimeTitle}}</h1>
+  <div class="my-2">
     {{range $index, $element := .AnimeEpisodes}}
-      <a href="/getstream?id={{$element.LinkID}}">
+      <a class="roundedLink m-1 bg-primary text-white" href="/getstream?id={{$element.LinkID}}">
         {{$element.EpisodeID}}
       </a>
     {{end}}

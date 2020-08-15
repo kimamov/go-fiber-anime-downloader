@@ -76,42 +76,55 @@ type AnimeEpisodeLink struct {
 	EpisodeID int
 	LinkID    string
 }
+type AnimeWithEpisodes struct {
+	Title    string
+	Episodes []AnimeEpisodeLink
+}
 
 // GetData tries to return a list of anime episodes from an url
-func GetData(animeURL string) ([]AnimeEpisodeLink, error) {
-
+func GetData(animeURL string) (AnimeWithEpisodes, error) {
+	anime := AnimeWithEpisodes{}
 	// Get the HMTML
 	animeDocument, err := getDocument(animeURL)
 	if err != nil {
-		return nil, err
+		return anime, err
 	}
 	// get the data-id from the player div
 	dataID, ok := animeDocument.Find("div#player").Attr("data-id")
 	if !ok {
-		return nil, nil
+		return anime, nil
 	}
 	// use data-id to a list of episodes
 	animeStreamsDocument, err := getJSONDocument(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataID))
 	if err != nil {
-		return nil, err
+		return anime, err
 	}
 
 	// try to get the div containing the episodes hosted on streamtape
 	//var episodesMap map[int]string
 	//episodesMap = make(map[int]string)
-	var episodesList []AnimeEpisodeLink
+	//var episodesList []AnimeEpisodeLink
 	container := animeStreamsDocument.Find(`div[data-id="40"]`)
 	container.Find("a").Each(func(i int, s *goquery.Selection) {
 		LinkID, ok := s.Attr("data-id")
 		if ok {
-			episodesList = append(episodesList, AnimeEpisodeLink{
+			anime.Episodes = append(anime.Episodes, AnimeEpisodeLink{
 				EpisodeID: i,
 				LinkID:    strings.TrimSpace(LinkID),
 			})
 		}
 	})
+	// if we found all the needed stuff successfully find the anime title too
+	titleContainer := animeDocument.Find(`div.widget-title`)
+	if titleContainer != nil {
+		title := titleContainer.Find(`h1`).First().Text()
+		if title != "" {
+			anime.Title = title
+		}
+	}
+	//fmt.Println(goquery.OuterHtml(anime))
 
-	return episodesList, nil
+	return anime, nil
 }
 
 // Anime is an anime we craped from 9anime search
