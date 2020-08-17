@@ -8,7 +8,7 @@ the app scrapes 9anime for all episodes that are uploaded on Streamtape.
 So if your anime is not on streamtape it can't be downloaded for now :/
 
 # usage 
-git clone https://github.com/kantimam/go-fiber-anime-downloader  
+git clone https://github.com/kantimam/go-fiber-anime-downloader.git  
 make sure go version is above 1.15  
 go build  
 run the executable
