@@ -81,8 +81,8 @@ type AnimeWithEpisodes struct {
 	Episodes []AnimeEpisodeLink
 }
 
-// GetData tries to return a list of anime episodes from an url
-func GetData(animeURL string) (AnimeWithEpisodes, error) {
+// GetAnimeEpisodes tries to return a list of anime episodes from an url
+func GetAnimeEpisodes(animeURL string) (AnimeWithEpisodes, error) {
 	anime := AnimeWithEpisodes{}
 	// Get the HMTML
 	animeDocument, err := getDocument(animeURL)
@@ -109,7 +109,7 @@ func GetData(animeURL string) (AnimeWithEpisodes, error) {
 		LinkID, ok := s.Attr("data-id")
 		if ok {
 			anime.Episodes = append(anime.Episodes, AnimeEpisodeLink{
-				EpisodeID: i,
+				EpisodeID: i + 1,
 				LinkID:    strings.TrimSpace(LinkID),
 			})
 		}

@@ -1,6 +1,4 @@
-
-<div class="card p-2">
-  <style>
+<style>
     .film-list{
         display: grid;
         grid-template-columns: repeat( auto-fit, minmax(16rem, 1fr) );
@@ -13,8 +11,9 @@
         width: 100%;
     }
     .item .name{
-      margin-top: 0.4rem;
-      padding: 0.2rem;
+      display: inline-block;
+      margin: 0.2rem 0;
+      padding: 0.2rem 0.4rem;
     }
     .item .poster img{
         position: absolute;
@@ -23,13 +22,14 @@
         object-fit: cover;
     }
     .item {
-      padding: 0.2rem 0.1rem;
+      padding: 0.3rem 0.2rem;
     }
     .item .inner {
         height: 100%;
         overflow: hidden;
         border-radius: 0.4rem;
-        background-color: rgba(220,220, 220, 1);
+        box-sizing: border-box;
+        border: 1px solid grey;
     }
     .item .status {
         position: absolute;
@@ -38,12 +38,19 @@
         justify-content: space-between;
         width: 100%;
     }
-    .item .status .ep, .item .status .dub{
+    .item .status>div{
         background-color: #5021c199;
         color: white;
         padding: 0.2rem;
     }
-  </style>
+
+    #animeSearchCard {
+      margin-bottom: 6rem;
+      padding-bottom: 0.4rem;
+    }
+</style>
+<div class="card p-2" id="animeSearchCard">
+  
   <h1>Anime found</h1>
   <div id="animeSearchContainer">
     

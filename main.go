@@ -21,27 +21,13 @@ func main() {
 		Views: engine,
 	})
 
-	app.Get("/api/getepisodes", func(c *fiber.Ctx) {
-		url := c.Query("url")
-		if url == "" {
-			c.Send("please provide a valid 9anime url")
-			return
-		}
-		data, err := api.GetData(url)
-		if err != nil {
-			c.Send("failed to get video")
-		} else {
-			c.Send(data)
-		}
-	})
-
 	app.Get("/getepisodes", func(c *fiber.Ctx) {
 		url := c.Query("url")
 		if url == "" {
 			c.Send("please provide a valid 9anime url")
 			return
 		}
-		data, err := api.GetData(url)
+		data, err := api.GetAnimeEpisodes(url)
 		if err != nil {
 			c.Send("failed to get video")
 		} else {
@@ -68,7 +54,7 @@ func main() {
 				//fmt.Println(animeList)
 				//c.Send(animeList)
 				_ = c.Render("animeSearch", fiber.Map{
-					"Title":         "hey there! ;)",
+					"Title":         key,
 					"AnimeListHTML": animeList,
 				}, "layouts/main")
 			}
@@ -88,7 +74,7 @@ func main() {
 			return
 		}
 		c.Render("stream", fiber.Map{
-			"Title":     "stream or download your anime",
+			"Title":     stream.Episode,
 			"Episode":   stream.Episode,
 			"StreamSrc": stream.Link,
 		}, "layouts/main")
@@ -97,7 +83,7 @@ func main() {
 	//app.Static("/", "./public")
 	app.Get("/*", func(c *fiber.Ctx) {
 		_ = c.Render("index", fiber.Map{
-			"Title": "hey there! ;)",
+			"Title": "anime downloader",
 		}, "layouts/main")
 	})
 
