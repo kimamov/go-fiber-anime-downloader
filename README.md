@@ -5,7 +5,7 @@ Can be useful when your device can't use Adblock like Samsung TVs.
 
 # IMPORTANT
 9anime changes their url alot lately to stuff like www10.9anime etc.  
-Make sure to set the env variable NINE_ANIME_ROOT_URL to the current url if the app stop working.
+Make sure to set the env variable NINE_ANIME_ROOT_URL to the current url if the app stops working.
 
 # can not download your anime?
 the app scrapes 9anime for all episodes that are uploaded on Streamtape.  
