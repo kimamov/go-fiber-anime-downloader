@@ -147,7 +147,7 @@ type Anime struct {
 
 // FindAnime tries to return an array of animes for a certain title string
 func FindAnime(title string) (string, error) {
-	document, err := getDocument(fmt.Sprintf("%s/search?keyword=%s", nineAnimeRootURL, title))
+	document, err := getDocument(fmt.Sprintf("%ssearch?keyword=%s", nineAnimeRootURL, title))
 	if err != nil {
 		return "", err
 	}

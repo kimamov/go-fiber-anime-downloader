@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"goserver/api"
 	"log"
 	"os"
@@ -30,7 +29,6 @@ func main() {
 		}
 		data, err := api.GetAnimeEpisodes(url)
 		if err != nil {
-			fmt.Println(err)
 			c.Send("failed to get video")
 		} else {
 			//fmt.Println(data)
