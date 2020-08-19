@@ -11,5 +11,7 @@ So if your anime is not on streamtape it can't be downloaded for now :/
 git clone https://github.com/kantimam/go-fiber-anime-downloader.git  
 make sure go version is above 1.15  
 go build  
-run the executable
+run the executable (most likely "goserver")
 
+# try it out on
+https://anime.baizuo.online/
