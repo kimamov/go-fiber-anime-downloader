@@ -6,11 +6,22 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/djimenez/iconv-go"
 )
+
+func getNineAnimeRootURL() string {
+	val, ok := os.LookupEnv("NINE_ANIME_ROOT_URL")
+	if ok {
+		return val
+	}
+	return "https://www10.9anime.to/"
+}
+
+var nineAnimeRootURL string = getNineAnimeRootURL()
 
 func getJSONResponse(url string) (map[string]string, error) {
 	res, err := http.Get(url)
@@ -91,11 +102,11 @@ func GetAnimeEpisodes(animeURL string) (AnimeWithEpisodes, error) {
 	}
 	// get the data-id from the player div
 	dataID, ok := animeDocument.Find("div#player").Attr("data-id")
-	if !ok {
-		return anime, nil
+	if !ok || dataID == "" {
+		return anime, errors.New("could not find anime data-id")
 	}
 	// use data-id to a list of episodes
-	animeStreamsDocument, err := getJSONDocument(fmt.Sprintf("https://9anime.to/ajax/film/servers?id=%s", dataID))
+	animeStreamsDocument, err := getJSONDocument(fmt.Sprintf("%sajax/film/servers?id=%s", nineAnimeRootURL, dataID))
 	if err != nil {
 		return anime, err
 	}
@@ -136,7 +147,7 @@ type Anime struct {
 
 // FindAnime tries to return an array of animes for a certain title string
 func FindAnime(title string) (string, error) {
-	document, err := getDocument(fmt.Sprintf("https://9anime.to/search?keyword=%s", title))
+	document, err := getDocument(fmt.Sprintf("%s/search?keyword=%s", nineAnimeRootURL, title))
 	if err != nil {
 		return "", err
 	}
@@ -159,7 +170,7 @@ type AnimeStream struct {
 func GetStream(videoID string) (AnimeStream, error) {
 	// https://9anime.to/ajax/episode/info?id=550fd1cbd47a12d12729279913a9eb7040ea828c6a169fec38e2169641146d70&server=40
 	stream := AnimeStream{}
-	streamTapeLink, err := getJSONResponse(fmt.Sprintf("https://9anime.to/ajax/episode/info?id=%s&server=40", videoID))
+	streamTapeLink, err := getJSONResponse(fmt.Sprintf("%sajax/episode/info?id=%s&server=40", nineAnimeRootURL, videoID))
 	if err != nil {
 		return stream, err
 	}
