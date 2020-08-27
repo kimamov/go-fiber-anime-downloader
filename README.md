@@ -4,7 +4,7 @@ App that lets you search and download anime from 9anime.
 Can be useful when your device can't use Adblock like Samsung TVs.  
 
 # info
-looks like 9anime blocks repeated requests after kissanime got banned.
+looks like 9anime IP blocks repeated requests after kissanime got banned.  
 trying to find a workaround
 
 # IMPORTANT
