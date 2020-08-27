@@ -3,6 +3,10 @@ learning fiber library for go :)
 App that lets you search and download anime from 9anime.  
 Can be useful when your device can't use Adblock like Samsung TVs.  
 
+# info
+looks like 9anime blocks repeated requests after kissanime got banned.
+trying to find a workaround
+
 # IMPORTANT
 9anime changes their url alot lately to stuff like www10.9anime etc.  
 Make sure to set the env variable NINE_ANIME_ROOT_URL to the current url if the app stops working.
